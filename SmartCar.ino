@@ -7,7 +7,9 @@ Modify:  2017-11-24
 ***********************************************************/
 #include "define_h.h"
 
+#define speed	30
 boolean isMotorRunning = false; //电机是否运行中
+
 
 void setup()
 {
@@ -46,7 +48,8 @@ void keyPressHandler() {
 				{
 					digitalWrite(LedPin, HIGH);
 					//run(10);
-					moveTest();
+					//moveTest();
+					//colorfulRun();
 				}
 				else
 				{
@@ -55,6 +58,11 @@ void keyPressHandler() {
 				}
 			}
 		}
+	}
+
+	if (isMotorRunning)
+	{
+		tracking();
 	}
 }
 
@@ -69,6 +77,85 @@ void moveTest() {
 	spin_right(20); //向右旋转2s
 	spin_left(20);//向左旋转2s
 	brake(5);//停车
+}
+
+/*花样运动*/
+void colorfulRun() {
+	int i;
+	delay(2000); //延时2s后启动
+	run(10);
+	back(10);//全速前进急停后退
+	brake(5);
+
+	for (i = 0; i<5; i++)
+	{
+		run(10);//小车间断性前进5步
+		brake(1);
+	}
+
+	for (i = 0; i<5; i++)
+	{
+		back(10);//小车间断性后退5步
+		brake(1);
+	}
+
+	for (i = 0; i<5; i++)
+	{
+		left(10);//大弯套小弯连续左旋转
+		spin_left(5);
+	}
+
+	for (i = 0; i<5; i++)
+	{
+		right(10);//大弯套小弯连续右旋转
+		spin_right(5);
+	}
+
+	for (i = 0; i<10; i++)
+	{
+		right(1);//间断性原地右转弯
+		brake(1);
+	}
+
+	for (i = 0; i<10; i++)
+	{
+		left(1);//间断性原地左转弯
+		brake(1);
+	}
+
+	for (i = 0; i<10; i++)
+	{
+		left(3);//走S形前进
+		right(3);
+	}
+
+	for (i = 0; i<10; i++)
+	{
+		spin_left(3);//间断性原地左打转
+		brake(3);
+	}
+
+	for (i = 0; i<10; i++)
+	{
+		spin_right(3);//间断性原地右打转
+		brake(3);
+	}
+}
+/*循迹运动*/
+void tracking() {
+	//有信号为LOW  没有信号为HIGH
+	SR = digitalRead(SensorRight);//有信号表明在白色区域，车子底板上L3亮；没信号表明压在黑线上，车子底板上L3灭
+	SL = digitalRead(SensorLeft);//有信号表明在白色区域，车子底板上L2亮；没信号表明压在黑线上，车子底板上L2灭
+	if (SL == LOW && SR == LOW)
+		run(0);   //调用前进函数
+	else if (SL == HIGH & SR == LOW)// 左循迹红外传感器,检测到信号，车子向右偏离轨道，向左转 
+		left(0);
+	else if (SR == HIGH & SL == LOW) // 右循迹红外传感器,检测到信号，车子向左偏离轨道，向右转  
+		right(0);
+	else if (SR == HIGH & SL == HIGH)
+		run(0);
+	else // 都是白色, 停止
+		brake(0);
 }
 
 /*舵机操作*/
@@ -103,11 +190,11 @@ void run(int time)     // 前进
 {
 	digitalWrite(Right_motor_go, HIGH);  // 右电机前进
 	digitalWrite(Right_motor_back, LOW);
-	analogWrite(Right_motor_go, 200);//PWM比例0~255调速，左右轮差异略增减
+	analogWrite(Right_motor_go, speed);//PWM比例0~255调速，左右轮差异略增减
 	analogWrite(Right_motor_back, 0);
 	digitalWrite(Left_motor_go, HIGH);  // 左电机前进
 	digitalWrite(Left_motor_back, LOW);
-	analogWrite(Left_motor_go, 200);//PWM比例0~255调速，左右轮差异略增减
+	analogWrite(Left_motor_go, speed);//PWM比例0~255调速，左右轮差异略增减
 	analogWrite(Left_motor_back, 0);
 	delay(time * 100);   //执行时间，可以调整  
 }
@@ -127,7 +214,7 @@ void left(int time)
 {
 	digitalWrite(Right_motor_go, HIGH);	// 右电机前进
 	digitalWrite(Right_motor_back, LOW);
-	analogWrite(Right_motor_go, 200);
+	analogWrite(Right_motor_go, speed);
 	analogWrite(Right_motor_back, 0);//PWM比例0~255调速
 	digitalWrite(Left_motor_go, LOW);   //左轮不动
 	digitalWrite(Left_motor_back, LOW);
@@ -141,12 +228,12 @@ void spin_left(int time)
 {
 	digitalWrite(Right_motor_go, HIGH);	// 右电机前进
 	digitalWrite(Right_motor_back, LOW);
-	analogWrite(Right_motor_go, 200);
+	analogWrite(Right_motor_go, speed);
 	analogWrite(Right_motor_back, 0);//PWM比例0~255调速
 	digitalWrite(Left_motor_go, LOW);   //左轮后退
 	digitalWrite(Left_motor_back, HIGH);
 	analogWrite(Left_motor_go, 0);
-	analogWrite(Left_motor_back, 200);//PWM比例0~255调速
+	analogWrite(Left_motor_back, speed);//PWM比例0~255调速
 	delay(time * 100);	//执行时间，可以调整  
 }
 
@@ -159,7 +246,7 @@ void right(int time)
 	analogWrite(Right_motor_back, 0);//PWM比例0~255调速
 	digitalWrite(Left_motor_go, HIGH);//左电机前进
 	digitalWrite(Left_motor_back, LOW);
-	analogWrite(Left_motor_go, 200);
+	analogWrite(Left_motor_go, speed);
 	analogWrite(Left_motor_back, 0);//PWM比例0~255调速
 	delay(time * 100);	//执行时间，可以调整  
 }
@@ -170,10 +257,10 @@ void spin_right(int time)
 	digitalWrite(Right_motor_go, LOW);   //右电机后退
 	digitalWrite(Right_motor_back, HIGH);
 	analogWrite(Right_motor_go, 0);
-	analogWrite(Right_motor_back, 200);//PWM比例0~255调速
+	analogWrite(Right_motor_back, speed);//PWM比例0~255调速
 	digitalWrite(Left_motor_go, HIGH);//左电机前进
 	digitalWrite(Left_motor_back, LOW);
-	analogWrite(Left_motor_go, 200);
+	analogWrite(Left_motor_go, speed);
 	analogWrite(Left_motor_back, 0);//PWM比例0~255调速
 	delay(time * 100);	//执行时间，可以调整  
 }
@@ -184,10 +271,10 @@ void back(int time)
 	digitalWrite(Right_motor_go, LOW);  //右轮后退
 	digitalWrite(Right_motor_back, HIGH);
 	analogWrite(Right_motor_go, 0);
-	analogWrite(Right_motor_back, 150);//PWM比例0~255调速
+	analogWrite(Right_motor_back, speed);//PWM比例0~255调速
 	digitalWrite(Left_motor_go, LOW);  //左轮后退
 	digitalWrite(Left_motor_back, HIGH);
 	analogWrite(Left_motor_go, 0);
-	analogWrite(Left_motor_back, 150);//PWM比例0~255调速
+	analogWrite(Left_motor_back, speed);//PWM比例0~255调速
 	delay(time * 100);     //执行时间，可以调整  
 }
