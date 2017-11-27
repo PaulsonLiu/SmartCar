@@ -1,4 +1,12 @@
 // mySteper.h
+/***********************************************************
+Project: mySteper
+Arthor:  Paulson Liu
+Compay:  Huamintek
+Create:  2017-11-27
+Modify:  2017-11-27
+***********************************************************/
+
 //步进电机调用例子
 //int timePerPai = -1;                // 每拍延时24ms，设置转速和方向。负值逆时针转。
 //StepMotor motor1;
