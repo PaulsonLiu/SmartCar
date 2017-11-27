@@ -31,6 +31,9 @@ int SR;		//右循迹红外传感器状态
 int SL_2;	//左红外传感器状态
 int SR_2;	//右红外传感器状态
 
+/*步进电机*/
+StepMotor motor1;
+
 void setPinModes() {
 	pinMode(LedPin, OUTPUT);	//设置LED
 	pinMode(BtnPin, INPUT);		//按键
@@ -46,6 +49,18 @@ void setPinModes() {
 	pinMode(SensorLeft, INPUT); //定义左循迹红外传感器为输入
 	pinMode(SensorRight_2, INPUT); //定义左红外传感器为输入
 	pinMode(SensorLeft_2, INPUT); //定义右红外传感器为输入
+
+	//门禁
+	//motor1.pin1 = 2;
+	//motor1.pin2 = 3;
+	//motor1.pin3 = 4;
+	//motor1.pin4 = 7;
+
+	//pinMode(motor1.pin1, OUTPUT);
+	//pinMode(motor1.pin2, OUTPUT);
+	//pinMode(motor1.pin3, OUTPUT);
+	//pinMode(motor1.pin4, OUTPUT);
+
 }
 
 

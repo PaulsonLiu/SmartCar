@@ -3,20 +3,19 @@ Project: Smart Car
 Arthor:  Paulson Liu
 Compay:  Huamintek
 Create:  2017-11-24
-Modify:  2017-11-24
+Modify:  2017-11-27
 ***********************************************************/
+#include "mySteper.h"
 #include "define_h.h"
 
 #define speed	30
 boolean isMotorRunning = false; //电机是否运行中
-
+int stepCount = 0;
 
 void setup()
 {
-
   /* add setup code here */
 	setPinModes();
-
 }
 
 void loop()
@@ -25,6 +24,7 @@ void loop()
 	keyPressHandler();
 
 }
+
 
 /*按键处理*/
 void keyPressHandler() {
@@ -62,7 +62,9 @@ void keyPressHandler() {
 
 	if (isMotorRunning)
 	{
-		tracking();
+		//tracking();//循迹
+		//avoid();//避障
+		trackingAndAvoid();
 	}
 }
 
@@ -153,6 +155,43 @@ void tracking() {
 	else if (SR == HIGH & SL == LOW) // 右循迹红外传感器,检测到信号，车子向左偏离轨道，向右转  
 		right(0);
 	else if (SR == HIGH & SL == HIGH)
+		run(0);
+	else // 都是白色, 停止
+		brake(0);
+}
+
+/*避障*/
+void avoid() {
+	SR_2 = digitalRead(SensorRight_2);
+	SL_2 = digitalRead(SensorLeft_2);
+
+	if (SL_2 == HIGH && SR_2 == HIGH)
+		run(0);   //调用前进函数
+	//else if (SL_2 == HIGH & SR_2 == LOW)// 右边探测到有障碍物，有信号返回，向左转 
+	//	left(0);
+	//else if (SR_2 == HIGH & SL_2 == LOW) //左边探测到有障碍物，有信号返回，向右转  
+	//	right(0);
+	else // 都是有障碍物, 停止
+		brake(0);
+}
+
+/*循迹和避障*/
+void trackingAndAvoid() {
+	//有信号为LOW  没有信号为HIGH
+	SR = digitalRead(SensorRight);//有信号表明在白色区域，车子底板上L3亮；没信号表明压在黑线上，车子底板上L3灭
+	SL = digitalRead(SensorLeft);//有信号表明在白色区域，车子底板上L2亮；没信号表明压在黑线上，车子底板上L2灭
+	SR_2 = digitalRead(SensorRight_2);
+	SL_2 = digitalRead(SensorLeft_2);
+
+	boolean hasBarrier = !SR_2 || !SL_2;//有障碍物
+
+	if (SL == LOW && SR == LOW && !hasBarrier)
+		run(0);   //调用前进函数
+	else if (SL == HIGH && SR == LOW && !hasBarrier)// 左循迹红外传感器,检测到信号，车子向右偏离轨道，向左转 
+		left(0);
+	else if (SR == HIGH && SL == LOW && !hasBarrier) // 右循迹红外传感器,检测到信号，车子向左偏离轨道，向右转  
+		right(0);
+	else if (SR == HIGH && SL == HIGH && !hasBarrier)
 		run(0);
 	else // 都是白色, 停止
 		brake(0);

@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="define_h.h" />
+    <ClInclude Include="mySteper.h" />
     <ClInclude Include="__vm\.SmartCar.vsarduino.h" />
   </ItemGroup>
   <PropertyGroup>
