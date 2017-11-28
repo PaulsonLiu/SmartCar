@@ -10,7 +10,6 @@ Modify:  2017-11-27
 
 #define speed	30
 boolean isMotorRunning = false; //电机是否运行中
-int stepCount = 0;
 
 void setup()
 {
@@ -191,8 +190,8 @@ void trackingAndAvoid() {
 		left(0);
 	else if (SR == HIGH && SL == LOW && !hasBarrier) // 右循迹红外传感器,检测到信号，车子向左偏离轨道，向右转  
 		right(0);
-	else if (SR == HIGH && SL == HIGH && !hasBarrier)
-		run(0);
+	//else if (SR == HIGH && SL == HIGH && !hasBarrier)
+	//	run(0);
 	else // 都是白色, 停止
 		brake(0);
 }
@@ -212,6 +211,7 @@ void servoHandler() {
 			servopulse(ServoPin, val);//模拟产生PWM
 		}
 	}
+
 }
 
 /*舵机角度控制,模拟PWM信号发送*/
@@ -222,6 +222,21 @@ void servopulse(int servopin, int myangle)/*定义一个脉冲函数，用来模拟方式产生PW
 	delayMicroseconds(pulsewidth);//延时脉宽值的微秒数
 	digitalWrite(servopin, LOW);//将舵机接口电平置低
 	delay(20 - pulsewidth / 1000);//延时周期内剩余时间
+}
+
+/*关闭门禁*/
+void CloseDoor(int pin) {
+	for (int i = 0; i <= 50; i++) //产生PWM个数，等效延时以保证能转到响应角度
+	{
+		servopulse(pin, 0);//模拟产生PWM
+	}
+}
+/*打开门禁*/
+void OpenDoor(int pin) {
+	for (int i = 0; i <= 50; i++) //产生PWM个数，等效延时以保证能转到响应角度
+	{
+		servopulse(pin, 60);//模拟产生PWM
+	}
 }
 
 /*电机运动*/

@@ -38,6 +38,10 @@ void setPinModes() {
 	pinMode(LedPin, OUTPUT);	//设置LED
 	pinMode(BtnPin, INPUT);		//按键
 	pinMode(beepPin, OUTPUT);	//蜂鸣器
+
+	//舵机
+	pinMode(ServoPin, OUTPUT);	//蜂鸣器
+
 	//初始化电机驱动IO为输出方式
 	pinMode(Left_motor_go, OUTPUT); // PIN 5 (PWM)
 	pinMode(Left_motor_back, OUTPUT); // PIN 9 (PWM)
